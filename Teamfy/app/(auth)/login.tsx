@@ -102,9 +102,14 @@ export default function Login() {
 				<Text style={styles.tagline}>Find mate!</Text>
 			</View>
 
-			{/* Google Login Section */}
 			<View style={styles.loginSection}>
 				{/* Email Login Section */}
+
+				<TouchableOpacity onPress={() => setEmailMode(emailMode === 'login' ? 'signup' : 'login')}>
+					<Text style={styles.signUpInfoText}>
+						{emailMode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
+					</Text>
+				</TouchableOpacity>
 
 				<TextInput
 					placeholder='Email'
@@ -121,11 +126,6 @@ export default function Login() {
 					secureTextEntry
 					style={styles.input}
 				/>
-				<TouchableOpacity onPress={() => setEmailMode(emailMode === 'login' ? 'signup' : 'login')}>
-					<Text style={{ textAlign: 'center', color: COLORS.primary }}>
-						{emailMode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
-					</Text>
-				</TouchableOpacity>
 
 				<TouchableOpacity
 					style={styles.googleButton}
@@ -136,6 +136,7 @@ export default function Login() {
 					</Text>
 				</TouchableOpacity>
 
+				{/* Google Login Section */}
 				<TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn} activeOpacity={0.9}>
 					<View style={styles.googleIconContainer}>
 						<Ionicons name='logo-google' size={20} color={COLORS.surface} />
@@ -158,9 +159,8 @@ export default function Login() {
 						</TouchableOpacity>
 					</View>
 				)}
-
-				<Text style={styles.termsText}>By continuing, you agree to our Terms and Privacy Policy</Text>
 			</View>
+			<Text style={styles.termsText}>By continuing, you agree to our Terms and Privacy Policy</Text>
 		</View>
 	)
 }

@@ -49,6 +49,7 @@ export const styles = StyleSheet.create({
 	},
 	loginSection: {
 		width: '100%',
+		marginTop: 50,
 		paddingHorizontal: 24,
 		paddingBottom: 40,
 		alignItems: 'center',
@@ -86,10 +87,13 @@ export const styles = StyleSheet.create({
 		color: COLORS.surface,
 	},
 	termsText: {
+		position: 'absolute',
+		bottom: 16, // odstęp od dołu ekranu
+		left: 24,
+		right: 24,
 		textAlign: 'center',
 		fontSize: 12,
-		color: COLORS.grey,
-		maxWidth: 280,
+		color: '#666',
 	},
 	input: {
 		backgroundColor: '#f1f1f1',
@@ -108,5 +112,11 @@ export const styles = StyleSheet.create({
 	primaryButtonText: {
 		color: '#fff',
 		fontWeight: 'bold',
+	},
+	signUpInfoText: {
+		color: COLORS.primary,
+		marginBottom: 10,
+		fontWeight: '600',
+		textDecorationLine: 'underline',
 	},
 })
