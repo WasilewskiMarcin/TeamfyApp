@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo'
+import { tokenCache } from '@clerk/clerk-expo/token-cache'
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 if (!publishableKey) {
@@ -9,16 +10,16 @@ if (!publishableKey) {
 
 export default function RootLayout() {
 	return (
-		<ClerkProvider publishableKey={publishableKey}>
+		<ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
 			<ClerkLoaded>
 				<SafeAreaProvider>
-					<SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
+					<SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
 						<Stack
 							screenOptions={{
 								headerShown: false,
-								contentStyle: {
-									backgroundColor: '#000000',
-								},
+								// contentStyle: {
+								// 	backgroundColor: '#000000',
+								// },
 							}}></Stack>
 					</SafeAreaView>
 				</SafeAreaProvider>
