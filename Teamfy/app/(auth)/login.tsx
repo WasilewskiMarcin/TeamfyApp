@@ -104,7 +104,6 @@ export default function Login() {
 
 			<View style={styles.loginSection}>
 				{/* Email Login Section */}
-
 				<TouchableOpacity onPress={() => setEmailMode(emailMode === 'login' ? 'signup' : 'login')}>
 					<Text style={styles.signUpInfoText}>
 						{emailMode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
@@ -143,6 +142,7 @@ export default function Login() {
 					</View>
 					<Text style={styles.googleButtonText}>Continue with Google</Text>
 				</TouchableOpacity>
+
 				{/* Verify Email Section */}
 				{pendingVerify && (
 					<View style={{ marginTop: 16 }}>
