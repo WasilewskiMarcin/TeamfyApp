@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
 		width: 60,
 		height: 60,
 		borderRadius: 18,
-		backgroundColor: 'rgba(74, 222, 128, 0.15)',
+		backgroundColor: 'rgba(159, 2, 120, 0.32)',
 		justifyContent: 'center',
 		alignItems: 'center',
 		marginBottom: 20,
@@ -51,20 +51,24 @@ export const styles = StyleSheet.create({
 		width: '100%',
 		marginTop: 50,
 		paddingHorizontal: 24,
+		paddingBottom: 20,
+		alignItems: 'center',
+	},
+	verifySection: {
+		width: '100%',
+		paddingHorizontal: 24,
 		paddingBottom: 40,
 		alignItems: 'center',
 	},
-	googleButton: {
+	googleButtonContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: COLORS.white,
+
 		paddingVertical: 16,
 		paddingHorizontal: 24,
 		borderRadius: 14,
-		marginBottom: 20,
-		width: '100%',
-		maxWidth: 300,
+		marginBottom: 10,
 		shadowColor: '#000',
 		shadowOffset: {
 			width: 0,
@@ -74,6 +78,17 @@ export const styles = StyleSheet.create({
 		shadowRadius: 12,
 		elevation: 5,
 	},
+	googleButton: {
+		width: '100%',
+		maxWidth: 300,
+		backgroundColor: COLORS.white,
+	},
+	verifyButton: {
+		width: '40%',
+		maxWidth: 300,
+		backgroundColor: '#cee7bc',
+	},
+
 	googleIconContainer: {
 		width: 24,
 		height: 24,
@@ -88,7 +103,7 @@ export const styles = StyleSheet.create({
 	},
 	termsText: {
 		position: 'absolute',
-		bottom: 16, // odstęp od dołu ekranu
+		bottom: 16,
 		left: 24,
 		right: 24,
 		textAlign: 'center',
@@ -96,8 +111,15 @@ export const styles = StyleSheet.create({
 		color: '#666',
 	},
 	input: {
-		backgroundColor: '#f1f1f1',
+		backgroundColor: '#ededed',
 		width: '100%',
+		padding: 12,
+		borderRadius: 8,
+		marginBottom: 10,
+	},
+	verifyInput: {
+		backgroundColor: '#ededed',
+		width: '80%',
 		padding: 12,
 		borderRadius: 8,
 		marginBottom: 10,

@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { styles } from '@/styles/auth.styles'
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { COLORS } from '@/constants/theme'
 import { useSSO, useSignIn, useSignUp } from '@clerk/clerk-expo'
 import { useRouter } from 'expo-router'
@@ -96,7 +96,7 @@ export default function Login() {
 			{/* Branding */}
 			<View style={styles.brandSection}>
 				<View style={styles.logoContainer}>
-					<Ionicons name='leaf' size={32} color={COLORS.primary} />
+					<AntDesign name='dingding' size={32} color={COLORS.primary} />
 				</View>
 				<Text style={styles.appName}>Teamfy</Text>
 				<Text style={styles.tagline}>Find mate!</Text>
@@ -127,38 +127,45 @@ export default function Login() {
 				/>
 
 				<TouchableOpacity
-					style={styles.googleButton}
+					style={[styles.googleButtonContainer, styles.googleButton]}
 					onPress={emailMode === 'login' ? handleEmailLogin : handleEmailSignUp}
 					activeOpacity={0.9}>
 					<Text style={styles.googleButtonText}>
 						{emailMode === 'login' ? 'Log in with Email' : 'Sign up with Email'}
 					</Text>
 				</TouchableOpacity>
-
-				{/* Google Login Section */}
-				<TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn} activeOpacity={0.9}>
-					<View style={styles.googleIconContainer}>
-						<Ionicons name='logo-google' size={20} color={COLORS.surface} />
-					</View>
-					<Text style={styles.googleButtonText}>Continue with Google</Text>
-				</TouchableOpacity>
-
 				{/* Verify Email Section */}
 				{pendingVerify && (
-					<View style={{ marginTop: 16 }}>
-						<Text style={{ fontWeight: 'bold', textAlign: 'center' }}>Verify your email</Text>
+					<View style={styles.verifySection}>
+						<Text style={{ fontWeight: 'bold', textAlign: 'center', color: 'green', marginBottom: 5 }}>
+							Verify your email
+						</Text>
 						<TextInput
 							placeholder='Verification code'
 							value={code}
 							onChangeText={setCode}
 							keyboardType='numeric'
-							style={styles.input}
+							style={styles.verifyInput}
 						/>
-						<TouchableOpacity onPress={handleVerifyCode} style={styles.googleButton} activeOpacity={0.9}>
+						<TouchableOpacity
+							onPress={handleVerifyCode}
+							style={[styles.googleButtonContainer, styles.verifyButton]}
+							activeOpacity={0.9}>
 							<Text style={styles.googleButtonText}>Verify</Text>
 						</TouchableOpacity>
 					</View>
 				)}
+
+				{/* Google Login Section */}
+				<TouchableOpacity
+					style={[styles.googleButtonContainer, styles.googleButton]}
+					onPress={handleGoogleSignIn}
+					activeOpacity={0.9}>
+					<View style={styles.googleIconContainer}>
+						<Ionicons name='logo-google' size={20} color={COLORS.surface} />
+					</View>
+					<Text style={styles.googleButtonText}>Continue with Google</Text>
+				</TouchableOpacity>
 			</View>
 			<Text style={styles.termsText}>By continuing, you agree to our Terms and Privacy Policy</Text>
 		</View>
