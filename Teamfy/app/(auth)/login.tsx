@@ -26,6 +26,7 @@ export default function Login() {
 			router.replace('/login')
 		}
 	}
+	
 	const { signIn, setActive: setActiveSignIn, isLoaded: signInLoaded } = useSignIn()
 	const { signUp, setActive: setActiveSignUp, isLoaded: signUpLoaded } = useSignUp()
 
