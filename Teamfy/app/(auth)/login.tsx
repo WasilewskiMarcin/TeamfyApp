@@ -10,23 +10,7 @@ import { Alert } from 'react-native'
 export default function Login() {
 	const { startSSOFlow } = useSSO()
 	const router = useRouter()
-	const handleGoogleSignIn = async () => {
-		try {
-			console.log('Starting Google SSO...')
-			const { createdSessionId, setActive } = await startSSOFlow({ strategy: 'oauth_google' })
-			console.log('Google SSO finished', createdSessionId)
 
-			if (setActive && createdSessionId) {
-				await setActive({ session: createdSessionId })
-				router.replace('../(tabs)')
-			}
-		} catch (error) {
-			console.error('0Auth error:', error)
-			Alert.alert('Login Error', 'Something went wrong. Please try again.')
-			router.replace('/login')
-		}
-	}
-	
 	const { signIn, setActive: setActiveSignIn, isLoaded: signInLoaded } = useSignIn()
 	const { signUp, setActive: setActiveSignUp, isLoaded: signUpLoaded } = useSignUp()
 
@@ -90,6 +74,22 @@ export default function Login() {
 			} else {
 				Alert.alert('Verification failed', 'Invalid code')
 			}
+		}
+	}
+	const handleGoogleSignIn = async () => {
+		try {
+			console.log('Starting Google SSO...')
+			const { createdSessionId, setActive } = await startSSOFlow({ strategy: 'oauth_google' })
+			console.log('Google SSO finished', createdSessionId)
+
+			if (setActive && createdSessionId) {
+				await setActive({ session: createdSessionId })
+				router.replace('../(tabs)')
+			}
+		} catch (error) {
+			console.error('0Auth error:', error)
+			Alert.alert('Login Error', 'Something went wrong. Please try again.')
+			router.replace('/login')
 		}
 	}
 	return (
