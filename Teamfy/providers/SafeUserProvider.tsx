@@ -1,9 +1,7 @@
-import { useRouter } from 'expo-router'
 import { useUser } from '@clerk/clerk-expo'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, View } from 'react-native'
 import Loader from '@/components/Loader'
 
 export default function SafeUserProvider({ children }: { children: React.ReactNode }) {
