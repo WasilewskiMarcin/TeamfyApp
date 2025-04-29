@@ -3,6 +3,7 @@ import { Slot } from 'expo-router'
 import { SignOutButton } from '@/components/SignOutButton'
 import { responsiveWidth, responsiveHeight, responsiveFontSize } from 'react-native-responsive-dimensions'
 import ProfileButton from '@/components/ProfileButton'
+import AppNavigator from './navigation/AppNavigator'
 
 export default function TabsLayout() {
 	return (

@@ -2,7 +2,7 @@ import { Stack } from 'expo-router'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import ClerkAndConvexProvider from '@/providers/ClerkAndConvexProvider'
 import SafeUserProvider from '@/providers/SafeUserProvider'
-import AppNavigator from '@/navigation/AppNavigator'
+import AppNavigator from '@/app/(tabs)/navigation/AppNavigator'
 export default function RootLayout() {
 	return (
 		<ClerkAndConvexProvider>
