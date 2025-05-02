@@ -4,12 +4,12 @@ import { styles } from '@/styles/auth.styles'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { COLORS } from '@/constants/theme'
 import { useSSO, useSignIn, useSignUp } from '@clerk/clerk-expo'
-import { useRouter } from 'expo-router'
+// import { useRouter } from 'expo-router'
 import { Alert } from 'react-native'
 
-export default function Login() {
+export default function LoginScreen() {
 	const { startSSOFlow } = useSSO()
-	const router = useRouter()
+	// const router = useRouter()
 
 	const { signIn, setActive: setActiveSignIn, isLoaded: signInLoaded } = useSignIn()
 	const { signUp, setActive: setActiveSignUp, isLoaded: signUpLoaded } = useSignUp()
@@ -29,7 +29,7 @@ export default function Login() {
 			})
 			if (resultLogin.status === 'complete') {
 				await setActiveSignIn({ session: resultLogin.createdSessionId })
-				router.replace('../(tabs)')
+				// router.replace('../(tabs)')
 			} else {
 				console.log('Login error:', resultLogin)
 			}
@@ -64,7 +64,7 @@ export default function Login() {
 			const verifyResult = await signUp.attemptEmailAddressVerification({ code })
 			if (verifyResult.status === 'complete') {
 				await setActiveSignUp({ session: verifyResult.createdSessionId })
-				router.replace('../(tabs)')
+				// router.replace('../(tabs)')
 			} else {
 				Alert.alert('Verification failed', 'The verification code is incorrect or expired.')
 			}
@@ -84,12 +84,12 @@ export default function Login() {
 
 			if (setActive && createdSessionId) {
 				await setActive({ session: createdSessionId })
-				router.replace('../(tabs)')
+				// router.replace('../(tabs)')
 			}
 		} catch (error) {
 			console.error('0Auth error:', error)
 			Alert.alert('Login Error', 'Something went wrong. Please try again.')
-			router.replace('/login')
+			// router.replace('/login')
 		}
 	}
 	return (
@@ -128,7 +128,7 @@ export default function Login() {
 				/>
 
 				<TouchableOpacity
-					style={[styles.googleButtonContainer, styles.googleButton]}
+					style={{ ...styles.googleButtonContainer, ...styles.googleButton }}
 					onPress={emailMode === 'login' ? handleEmailLogin : handleEmailSignUp}
 					activeOpacity={0.9}>
 					<Text style={styles.googleButtonText}>
@@ -159,7 +159,7 @@ export default function Login() {
 
 				{/* Google Login Section */}
 				<TouchableOpacity
-					style={[styles.googleButtonContainer, styles.googleButton]}
+					style={{ ...styles.googleButtonContainer, ...styles.googleButton }}
 					onPress={handleGoogleSignIn}
 					activeOpacity={0.9}>
 					<View style={styles.googleIconContainer}>

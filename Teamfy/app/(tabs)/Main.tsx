@@ -1,13 +1,12 @@
 import { View, StyleSheet, SafeAreaView, Text } from 'react-native'
-import { Slot } from 'expo-router'
+
 import { SignOutButton } from '@/components/SignOutButton'
 import { responsiveWidth, responsiveHeight, responsiveFontSize } from 'react-native-responsive-dimensions'
 import ProfileButton from '@/components/ProfileButton'
-import AppNavigator from './navigation/AppNavigator'
 
-export default function TabsLayout() {
+export default function Main() {
 	return (
-		<SafeAreaView style={styles.container}>
+		<View>
 			<View style={styles.header}>
 				<View style={styles.profileButton}>
 					<ProfileButton />
@@ -18,10 +17,8 @@ export default function TabsLayout() {
 				</View>
 			</View>
 
-			<View style={styles.content}>
-				<Slot />
-			</View>
-		</SafeAreaView>
+			<View style={styles.content}></View>
+		</View>
 	)
 }
 

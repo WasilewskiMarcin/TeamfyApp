@@ -1,10 +1,6 @@
-import { Redirect } from 'expo-router'
-import { useAuth } from '@clerk/clerk-expo'
+import React from 'react'
+import RootLayout from './Root'
 
 export default function Index() {
-	const { isSignedIn } = useAuth()
-	if (isSignedIn) {
-		return <Redirect href='../(tabs)' />
-	}
-	return <Redirect href='./(auth)/login' />
+	return <RootLayout />
 }
