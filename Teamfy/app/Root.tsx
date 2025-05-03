@@ -3,12 +3,15 @@ import ClerkAndConvexProvider from '@/providers/ClerkAndConvexProvider'
 import SafeUserProvider from '@/providers/SafeUserProvider'
 import { useAuth } from '@clerk/clerk-expo'
 import LoginScreen from './(auth)/LoginScreen'
-import Main from './(tabs)/Main'
-import Settings from './(tabs)/Settings/SettingsScreen'
-import { TouchableOpacity, View } from 'react-native'
+import UpcomingScreen from './(tabs)/UpcomingScreen'
+import SettingsScreen from './(tabs)/Settings/SettingsScreen'
+import { View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import ProjectManagerScreen from './(tabs)/ProjectManagerScreen'
+import {Ionicons} from '@expo/vector-icons'
+
 
 const Tab = createBottomTabNavigator()
 export default function RootLayout() {
@@ -38,8 +41,14 @@ function RootNavigation() {
 		return (
 			<View style={{ flex: 1 }}>
 				<Tab.Navigator screenOptions={{ headerShown: false }}>
-					<Tab.Screen name='Main' component={Main} />
-					<Tab.Screen name='Settings' component={Settings} />
+					<Tab.Screen  name='UpcomingScreen' component={UpcomingScreen} options={{
+						tabBarIcon: ({ size, color }) => (
+							<Ionicons name="home" size={size} color={color} />
+						  ),
+						}}/>
+					<Tab.Screen name='ProjectManagerScreen' component={ProjectManagerScreen} />
+
+					<Tab.Screen name='Settings' component={SettingsScreen} />
 				</Tab.Navigator>
 			</View>
 		)

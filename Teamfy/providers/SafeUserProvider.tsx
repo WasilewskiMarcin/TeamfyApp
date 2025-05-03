@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react'
 import Loader from '@/components/Loader'
 
 export default function SafeUserProvider({ children }: { children: React.ReactNode }) {
+	
 	const { user, isLoaded } = useUser()
-
 	const createUser = useMutation(api.users.createUser)
 	const currentUser = useQuery(api.users.getUserByClerkId, user?.id ? { clerkId: user.id } : 'skip')
 

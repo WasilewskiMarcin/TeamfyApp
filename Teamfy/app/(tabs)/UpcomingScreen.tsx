@@ -4,7 +4,7 @@ import { SignOutButton } from '@/components/SignOutButton'
 import { responsiveWidth, responsiveHeight, responsiveFontSize } from 'react-native-responsive-dimensions'
 import ProfileButton from '@/components/ProfileButton'
 
-export default function Main() {
+export default function UpcomingScreen() {
 	return (
 		<View>
 			<View style={styles.header}>
