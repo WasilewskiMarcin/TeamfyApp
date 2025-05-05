@@ -11,7 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import ProjectManagerScreen from './(tabs)/ProjectManagerScreen'
 import {Ionicons} from '@expo/vector-icons'
-
+import CalendarIconWithDate from '@/components/CalendarIconWithDate'
 
 const Tab = createBottomTabNavigator()
 export default function RootLayout() {
@@ -42,13 +42,19 @@ function RootNavigation() {
 			<View style={{ flex: 1 }}>
 				<Tab.Navigator screenOptions={{ headerShown: false }}>
 					<Tab.Screen  name='UpcomingScreen' component={UpcomingScreen} options={{
+						tabBarIcon: ({size, color}) => <CalendarIconWithDate size={size} color={color} />,
+						}}/>
+					<Tab.Screen name='ProjectManagerScreen' component={ProjectManagerScreen} options={{
 						tabBarIcon: ({ size, color }) => (
 							<Ionicons name="home" size={size} color={color} />
 						  ),
 						}}/>
-					<Tab.Screen name='ProjectManagerScreen' component={ProjectManagerScreen} />
 
-					<Tab.Screen name='Settings' component={SettingsScreen} />
+					<Tab.Screen name='Settings' component={SettingsScreen} options={{
+						tabBarIcon: ({ size, color }) => (
+							<Ionicons name="settings" size={size} color={color} />
+						  ),
+						}}/>
 				</Tab.Navigator>
 			</View>
 		)
