@@ -1,10 +1,29 @@
-import {  Text, TouchableOpacity } from 'react-native'
+import { Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { NavigationProp } from '../../Root'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import ProfileScreen from '@/app/ProfileScreen'
+// import { NavigationProp } from '../../Root'
+export type RootStackParamList = {
+	Settings: undefined
+	Profile: undefined
+}
+
+export type NavigationProp = NativeStackNavigationProp<RootStackParamList>
+
+const Stack = createNativeStackNavigator()
 
 
+// export default function SettingsNavigator() {
+// 	return (
+// 		<Stack.Navigator screenOptions={{ headerShown: false }}>
+// 			<Stack.Screen name='Settings' component={SettingsScreen} />
+// 			<Stack.Screen name='Profile' component={ProfileScreen} />
+// 		</Stack.Navigator>
+// 	)
+// }
 export default function SettingsScreen() {
 	const navigation = useNavigation<NavigationProp>()
 	return (
@@ -25,4 +44,3 @@ export default function SettingsScreen() {
 		</ScrollView>
 	)
 }
-

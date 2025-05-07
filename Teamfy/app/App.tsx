@@ -4,57 +4,49 @@ import SafeUserProvider from '@/providers/SafeUserProvider'
 import { useAuth } from '@clerk/clerk-expo'
 import LoginScreen from './(auth)/LoginScreen'
 import UpcomingScreen from './(tabs)/UpcomingScreen'
-import SettingsScreen from './(tabs)/Settings/SettingsScreen'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import ProjectManagerScreen from './(tabs)/ProjectManagerScreen'
 import { Ionicons } from '@expo/vector-icons'
 import CalendarIconWithDate from '@/components/CalendarIconWithDate'
 import CreateEventScreen from './(tabs)/CreateEventScreen'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import ProfileScreen from './ProfileScreen'
+import SettingsScreen from './(tabs)/Settings/SettingsScreen'
+import { NavigationContainer } from '@react-navigation/native'
 
-export type RootStackParamList = {
-	Tabs: undefined
-	Profile: undefined
-	Login: undefined
-}
-
-export type NavigationProp = NativeStackNavigationProp<RootStackParamList>
-
-const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator()
+const Stack = createNativeStackNavigator()
 
-export default function RootLayout() {
+export default function App() {
 	return (
 		<ClerkAndConvexProvider>
 			<SafeAreaProvider>
 				<SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
 					<SafeUserProvider>
-						<MainNavigator />
+						<NavigationContainer>
+							<MainNavigator />
+						</NavigationContainer>
 					</SafeUserProvider>
 				</SafeAreaView>
 			</SafeAreaProvider>
 		</ClerkAndConvexProvider>
 	)
 }
+
 function MainNavigator() {
 	const { isSignedIn } = useAuth()
 
-	return (
-		<Stack.Navigator screenOptions={{ headerShown: false }}>
-			{isSignedIn ? (
-				<>
-					<Stack.Screen name='Tabs' component={RootTabNavigation} />
-					<Stack.Screen name='Profile' component={ProfileScreen} />
-				</>
-			) : (
-				<Stack.Screen name='Login' component={LoginScreen} />
-			)}
-		</Stack.Navigator>
-	)
+	if (isSignedIn) {
+		return (
+			<Stack.Navigator screenOptions={{ headerShown: false }}>
+				<Stack.Screen name='Tabs' component={RootTabNavigation} />
+				<Stack.Screen name='Profile' component={ProfileScreen} />
+			</Stack.Navigator>
+		)
+	} else {
+		return <LoginScreen />
+	}
 }
-
 function RootTabNavigation() {
 	return (
 		<Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -80,12 +72,21 @@ function RootTabNavigation() {
 				}}
 			/>
 			<Tab.Screen
-				name='Settings'
-				component={SettingsScreen}
+				name='SettingsNavigator'
+				component={SettingsNavigator}
 				options={{
 					tabBarIcon: ({ size, color }) => <Ionicons name='settings' size={size} color={color} />,
 				}}
 			/>
 		</Tab.Navigator>
+	)
+}
+function SettingsNavigator() {
+
+	return (
+		<Stack.Navigator screenOptions={{ headerShown: false }}>
+			<Stack.Screen name='Settings' component={SettingsScreen} />
+			
+		</Stack.Navigator>
 	)
 }
