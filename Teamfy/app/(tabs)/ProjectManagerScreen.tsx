@@ -1,10 +1,11 @@
 import { View, Text } from 'react-native'
-import React from 'react'
-
+import TopTabNavigator from '@/components/TopBarComponents/TopTabNavigator'
 export default function ProjectManagerScreen() {
-  return (
-    <View>
-      <Text>ProjectManager</Text>
-    </View>
-  )
+	return (
+		<TopTabNavigator>
+			<View>
+				<Text>ProjectManager</Text>
+			</View>
+		</TopTabNavigator>
+	)
 }

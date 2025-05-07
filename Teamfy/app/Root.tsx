@@ -5,12 +5,10 @@ import { useAuth } from '@clerk/clerk-expo'
 import LoginScreen from './(auth)/LoginScreen'
 import UpcomingScreen from './(tabs)/UpcomingScreen'
 import SettingsScreen from './(tabs)/Settings/SettingsScreen'
-import { View } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import ProjectManagerScreen from './(tabs)/ProjectManagerScreen'
 import { Ionicons } from '@expo/vector-icons'
 import CalendarIconWithDate from '@/components/CalendarIconWithDate'
-import TopNavigator from '@/components/TopNavigator'
 import CreateEventScreen from './(tabs)/CreateEventScreen'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -62,33 +60,21 @@ function RootTabNavigation() {
 		<Tab.Navigator screenOptions={{ headerShown: false }}>
 			<Tab.Screen
 				name='Upcoming'
-				children={() => (
-					<TopNavigator>
-						<UpcomingScreen />
-					</TopNavigator>
-				)}
+				component={UpcomingScreen}
 				options={{
 					tabBarIcon: ({ size, color }) => <CalendarIconWithDate size={size} color={color} />,
 				}}
 			/>
 			<Tab.Screen
 				name='ProjectManager'
-				children={() => (
-					<TopNavigator>
-						<ProjectManagerScreen />
-					</TopNavigator>
-				)}
+				component={ProjectManagerScreen}
 				options={{
 					tabBarIcon: ({ size, color }) => <Ionicons name='home' size={size} color={color} />,
 				}}
 			/>
 			<Tab.Screen
 				name='CreateEvent'
-				children={() => (
-					<TopNavigator>
-						<CreateEventScreen />
-					</TopNavigator>
-				)}
+				component={CreateEventScreen}
 				options={{
 					tabBarIcon: ({ size, color }) => <Ionicons name='add-circle' size={size} color={color} />,
 				}}

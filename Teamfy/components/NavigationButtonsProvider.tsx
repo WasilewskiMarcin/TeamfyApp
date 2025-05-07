@@ -7,7 +7,7 @@ export default function NavigationButtonsProvider({children}: { children: React.
     const navigation = useNavigation()
 	return(
 		<View style={{ flex: 1 }}>
-			<View style={{height: 30}}>
+			<View style={{height: 30, backgroundColor: 'black'}}>
                 <TouchableOpacity
                 onPress={() => {navigation.goBack()}}>
                     <Text>Go Back</Text>

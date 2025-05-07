@@ -1,10 +1,11 @@
 import { View, Text } from 'react-native'
-
+import TopTabNavigator from '@/components/TopBarComponents/TopTabNavigator'
 export default function UpcomingScreen() {
 	return (
-		<View>
-			<Text>Upcoming Screen</Text>
-		</View>
+		<TopTabNavigator>
+			<View>
+				<Text>Upcoming Screen</Text>
+			</View>
+		</TopTabNavigator>
 	)
 }
-
