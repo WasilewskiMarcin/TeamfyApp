@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import NavigationButtonsProvider from '@/components/NavigationButtonsProvider'
+import TopBackNavigator from '@/components/TopBarComponents/TopBackNavigator'
 export default function ProfileScreen() {
 	return (
-		<NavigationButtonsProvider >
+		<TopBackNavigator>
 			<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 				<Text>ProfileScreen</Text>
 			</View>
-		</NavigationButtonsProvider>
+		</TopBackNavigator>
 	)
 }
