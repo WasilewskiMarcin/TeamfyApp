@@ -1,8 +1,6 @@
 import { useClerk } from '@clerk/clerk-expo'
-import * as Linking from 'expo-linking'
-import { Text, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
-import { View } from 'react-native'
 import { COLORS } from '@/constants/theme'
 
 export const SignOutButton = () => {

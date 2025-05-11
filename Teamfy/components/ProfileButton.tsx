@@ -1,7 +1,7 @@
 import { TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
-
+import { COLORS } from '@/constants/theme'
 export default function ProfileButton() {
 	const navigation = useNavigation<any>()
 	return (
@@ -9,7 +9,7 @@ export default function ProfileButton() {
 			onPress={() => {
 				navigation.navigate('Profile')
 			}}>
-			<Ionicons name='person-circle-outline' size={28} color='black' />
+			<Ionicons name='person-circle-outline' size={28} color={COLORS.primary} />
 		</TouchableOpacity>
 	)
 }
