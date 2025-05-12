@@ -21,13 +21,13 @@ export default function App() {
 	return (
 		<ClerkAndConvexProvider>
 			<SafeAreaProvider>
-				<SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+
 					<SafeUserProvider>
 						<NavigationContainer>
 							<MainNavigator />
 						</NavigationContainer>
 					</SafeUserProvider>
-				</SafeAreaView>
+
 			</SafeAreaProvider>
 		</ClerkAndConvexProvider>
 	)

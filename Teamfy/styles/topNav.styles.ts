@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
 	profileButton: {
 		position: 'absolute',
 		left: 14,
-		top: 26,
+		top: 24,
 		color: COLORS.primary,
 	},
 	content: {
