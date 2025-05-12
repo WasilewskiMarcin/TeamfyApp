@@ -1,61 +1,87 @@
-import { View, Text, StyleSheet, Touchable, Alert } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native'
 import TopBackNavigator from '@/components/TopBarComponents/TopBackNavigator'
 import { COLORS } from '@/constants/theme'
 import { useUser } from '@clerk/clerk-expo'
 import { Image } from 'expo-image'
-import { TouchableOpacity } from 'react-native'
+import ImagePickerComponent from '@/components/ImagePicker'
+
 export default function ProfileScreen() {
 	const { user } = useUser()
-	return (
-		<TopBackNavigator>
-			<View style={styles.container}>
-				<View style={styles.header}>
-					<TouchableOpacity
-						onPress={() => {
-							onAvatarPress()
-						}}>
-						<Image source={{ uri: user?.imageUrl }} style={styles.avatar} contentFit='cover' />
-					</TouchableOpacity>
-				</View>
-			</View>
-		</TopBackNavigator>
-	)
-}
-function onAvatarPress() {
+	
+	const [showImagePicker, setShowImagePicker] = useState(false)
+
+	const handleImagePicked = async (uri: string) => {
+		setShowImagePicker(false)
+		try {
+			await user?.update({
+				unsafeMetadata: {
+					imageUrl: uri,
+				},
+			})
+			console.log('Zaktualizowano zdjęcie profilowe.')
+		} catch (error) {
+			console.error('Błąd przy aktualizacji zdjęcia profilowego:', error)
+		}
+	}
+
+	const onAvatarPress = () => {
 	Alert.alert(
-		'Edytuj zdjęcie profilowe',
-		'Co chcesz zrobić z tym zdjęciem?',
+		'Profile Picture',
+		'What would you like to do with this picture?',
 		[
 			{
-				text: 'Zmień zdjęcie',
-				onPress: () => changeProfilePicture(),
+				text: 'Change Picture',
+				onPress: () => setShowImagePicker(true),
 			},
 			{
-				text: 'Usuń zdjęcie',
+				text: 'Remove Picture',
 				onPress: () => removeProfilePicture(),
 				style: 'destructive',
 			},
 			{
-				text: 'Anuluj',
+				text: 'Cancel',
 				style: 'cancel',
 			},
 		],
 		{ cancelable: true }
 	)
 }
-const changeProfilePicture = () => {
-	// Przykładowa logika zmiany zdjęcia
-	console.log('Zmieniam zdjęcie profilowe.')
-	// Tutaj można dodać kod do zmiany zdjęcia, np. z użyciem kamery lub galerii.
-}
+	const removeProfilePicture = async () => {
+		try {
+			await user?.update({
+				unsafeMetadata: {
+					imageUrl: null,
+				},
+			})
 
-// Funkcja do usuwania zdjęcia (zaktualizowanie zdjęcia w Clerk na brak zdjęcia)
-const removeProfilePicture = () => {
-	// Przykładowa logika usuwania zdjęcia
-	console.log('Usuwam zdjęcie profilowe.')
-	// Ustawienie na domyślne zdjęcie lub brak zdjęcia
-	// setUser({ ...user, imageUrl: null }) // Jeśli chcesz zaktualizować użytkownika
+			console.log('Usunięto zdjęcie profilowe.')
+		} catch (error) {
+			console.error('Błąd przy usuwaniu zdjęcia profilowego:', error)
+		}
+	}
+
+	return (
+		<TopBackNavigator>
+			<View style={styles.container}>
+				<View style={styles.header}>
+					<TouchableOpacity onPress={onAvatarPress}>
+						<Image
+							source={
+								typeof user?.unsafeMetadata?.imageUrl === 'string'
+									? { uri: user.unsafeMetadata.imageUrl }
+									: { uri: user?.imageUrl }
+							}
+							style={styles.avatar}
+							contentFit='cover'
+						/>
+					</TouchableOpacity>
+				</View>
+
+				{showImagePicker && <ImagePickerComponent onImagePicked={handleImagePicked} style={styles.picker} />}
+			</View>
+		</TopBackNavigator>
+	)
 }
 
 const styles = StyleSheet.create({
@@ -71,16 +97,13 @@ const styles = StyleSheet.create({
 		backgroundColor: COLORS.background,
 		borderRadius: 10,
 		marginBottom: 20,
-
-		// iOS shadow
+		//iOS
 		shadowColor: '#000',
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.25,
 		shadowRadius: 3.84,
-		// Android shadow
+		//Android
 		elevation: 5,
-
-		// optional border
 		borderWidth: 1.2,
 		borderColor: '#ccc',
 	},
@@ -92,5 +115,8 @@ const styles = StyleSheet.create({
 		borderRadius: 43,
 		borderWidth: 2,
 		borderColor: COLORS.grey,
+	},
+	picker: {
+		marginTop: 20,
 	},
 })
