@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput } from 'react-native'
 import TopBackNavigator from '@/components/TopBarComponents/TopBackNavigator'
 import { COLORS } from '@/constants/theme'
 import { useUser } from '@clerk/clerk-expo'
 import { Image } from 'expo-image'
 import ImagePickerComponent from '@/components/ImagePicker'
-
+import { useEffect } from 'react'
 export default function ProfileScreen() {
 	const { user } = useUser()
-	
+
 	const [showImagePicker, setShowImagePicker] = useState(false)
 
 	const handleImagePicked = async (uri: string) => {
@@ -26,27 +26,27 @@ export default function ProfileScreen() {
 	}
 
 	const onAvatarPress = () => {
-	Alert.alert(
-		'Profile Picture',
-		'What would you like to do with this picture?',
-		[
-			{
-				text: 'Change Picture',
-				onPress: () => setShowImagePicker(true),
-			},
-			{
-				text: 'Remove Picture',
-				onPress: () => removeProfilePicture(),
-				style: 'destructive',
-			},
-			{
-				text: 'Cancel',
-				style: 'cancel',
-			},
-		],
-		{ cancelable: true }
-	)
-}
+		Alert.alert(
+			'Profile Picture',
+			'What would you like to do with this picture?',
+			[
+				{
+					text: 'Change Picture',
+					onPress: () => setShowImagePicker(true),
+				},
+				{
+					text: 'Remove Picture',
+					onPress: () => removeProfilePicture(),
+					style: 'destructive',
+				},
+				{
+					text: 'Cancel',
+					style: 'cancel',
+				},
+			],
+			{ cancelable: true }
+		)
+	}
 	const removeProfilePicture = async () => {
 		try {
 			await user?.update({
@@ -60,6 +60,7 @@ export default function ProfileScreen() {
 			console.error('Błąd przy usuwaniu zdjęcia profilowego:', error)
 		}
 	}
+	const [name, setName] = useState<string>(user?.firstName || '')
 
 	return (
 		<TopBackNavigator>
@@ -76,6 +77,12 @@ export default function ProfileScreen() {
 							contentFit='cover'
 						/>
 					</TouchableOpacity>
+					<View style={styles.inputContainers}>
+						<View style={styles.inputContainer}>
+							<Text style={styles.textBeforeInfput}>Name:</Text>
+							<TextInput value={name} onChangeText={setName} style={styles.input} placeholder='Enter your name' />
+						</View>
+					</View>
 				</View>
 
 				{showImagePicker && <ImagePickerComponent onImagePicked={handleImagePicked} style={styles.picker} />}
@@ -89,7 +96,22 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 	},
+	inputContainers: {
+		flex: 1,
+		alignItems: 'center',
+	},
+	inputContainer: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		gap: 10,
+	},
+	textBeforeInfput:{
+		marginTop: 20,
+	},
 	header: {
+		flexDirection: 'row',
+		gap: 20,
 		padding: 5,
 		marginTop: 10,
 		width: '95%',
@@ -118,5 +140,13 @@ const styles = StyleSheet.create({
 	},
 	picker: {
 		marginTop: 20,
+	},
+	input: {
+		borderWidth: 1,
+		borderColor: '#ccc',
+		borderRadius: 5,
+		padding: 10,
+		marginTop: 10,
+		width: '80%',
 	},
 })
