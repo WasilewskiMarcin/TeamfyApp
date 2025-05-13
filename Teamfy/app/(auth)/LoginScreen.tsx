@@ -1,16 +1,13 @@
-import { View, Text, Image, TouchableOpacity, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Image, TouchableOpacity, TextInput, Alert } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { styles } from '@/styles/auth.styles'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { COLORS } from '@/constants/theme'
 import { useSSO, useSignIn, useSignUp, useUser } from '@clerk/clerk-expo'
-// import { useRouter } from 'expo-router'
-import { Alert } from 'react-native'
-import { useEffect } from 'react'
+import ForgotPasswordScreen from './ForgotPassowrdScreen'
+
 export default function LoginScreen() {
 	const { startSSOFlow } = useSSO()
-
-	// const router = useRouter()
 
 	const { signIn, setActive: setActiveSignIn, isLoaded: signInLoaded } = useSignIn()
 	const { signUp, setActive: setActiveSignUp, isLoaded: signUpLoaded } = useSignUp()
@@ -20,6 +17,7 @@ export default function LoginScreen() {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [code, setCode] = useState('')
+	const [view, setView] = useState<'login' | 'forgot'>('login')
 
 	const handleEmailLogin = async () => {
 		if (!signInLoaded) return
@@ -30,7 +28,6 @@ export default function LoginScreen() {
 			})
 			if (resultLogin.status === 'complete') {
 				await setActiveSignIn({ session: resultLogin.createdSessionId })
-				// router.replace('../(tabs)')
 			} else {
 				console.log('Login error:', resultLogin)
 			}
@@ -42,11 +39,11 @@ export default function LoginScreen() {
 			}
 		}
 	}
+
 	const handleEmailSignUp = async () => {
 		if (!signUpLoaded) return
 		try {
 			await signUp.create({
-				username: email.split('@')[0],
 				emailAddress: email,
 				password: password,
 			})
@@ -60,13 +57,13 @@ export default function LoginScreen() {
 			}
 		}
 	}
+
 	const handleVerifyCode = async () => {
 		if (!signUpLoaded) return
 		try {
 			const verifyResult = await signUp.attemptEmailAddressVerification({ code })
 			if (verifyResult.status === 'complete') {
 				await setActiveSignUp({ session: verifyResult.createdSessionId })
-				// router.replace('../(tabs)')
 			} else {
 				Alert.alert('Verification failed', 'The verification code is incorrect or expired.')
 			}
@@ -78,23 +75,23 @@ export default function LoginScreen() {
 			}
 		}
 	}
+
 	const handleGoogleSignIn = async () => {
 		try {
-			console.log('Starting Google SSO...')
 			const { createdSessionId, setActive } = await startSSOFlow({ strategy: 'oauth_google' })
-			console.log('Google SSO finished', createdSessionId)
-
 			if (setActive && createdSessionId) {
 				await setActive({ session: createdSessionId })
 			}
-	
 		} catch (error) {
 			console.error('0Auth error:', error)
 			Alert.alert('Login Error', 'Something went wrong. Please try again.')
-			// router.replace('/login')
 		}
 	}
 
+	// 👇 Warunkowe renderowanie ekranu "Zapomniałeś hasła"
+	if (view === 'forgot') {
+		return <ForgotPasswordScreen goBack={() => setView('login')} />
+	}
 
 	return (
 		<View style={styles.container}>
@@ -131,6 +128,13 @@ export default function LoginScreen() {
 					style={styles.input}
 				/>
 
+				{/* Link do "zapomniałem hasła" */}
+				<TouchableOpacity onPress={() => setView('forgot')}>
+					<Text style={{ textAlign: 'center', color: COLORS.primary, marginTop: 10, marginBottom: 10 }}>
+						Forgot Password?
+					</Text>
+				</TouchableOpacity>
+
 				<TouchableOpacity
 					style={{ ...styles.googleButtonContainer, ...styles.googleButton }}
 					onPress={emailMode === 'login' ? handleEmailLogin : handleEmailSignUp}
@@ -139,7 +143,7 @@ export default function LoginScreen() {
 						{emailMode === 'login' ? 'Log in with Email' : 'Sign up with Email'}
 					</Text>
 				</TouchableOpacity>
-				{/* Verify Email Section */}
+
 				{pendingVerify && (
 					<View style={styles.verifySection}>
 						<Text style={{ fontWeight: 'bold', textAlign: 'center', color: 'green', marginBottom: 5 }}>
@@ -161,7 +165,6 @@ export default function LoginScreen() {
 					</View>
 				)}
 
-				{/* Google Login Section */}
 				<TouchableOpacity
 					style={{ ...styles.googleButtonContainer, ...styles.googleButton }}
 					onPress={handleGoogleSignIn}
@@ -172,6 +175,7 @@ export default function LoginScreen() {
 					<Text style={styles.googleButtonText}>Continue with Google</Text>
 				</TouchableOpacity>
 			</View>
+
 			<Text style={styles.termsText}>By continuing, you agree to our Terms and Privacy Policy</Text>
 		</View>
 	)

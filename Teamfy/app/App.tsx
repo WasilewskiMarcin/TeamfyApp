@@ -48,21 +48,7 @@ function MainNavigator() {
 	}
 }
 function RootTabNavigation() {
-	const { user, isLoaded } = useUser()
-	const [didSetUsername, setDidSetUsername] = useState(false)
-	useEffect(() => {
-		if(didSetUsername) return
-		if (isLoaded && user && !didSetUsername) {
-			const fallbackUsername = user.primaryEmailAddress?.emailAddress.split('@')[0] ?? ''
-			user
-				.update({ username: user.username || fallbackUsername })
-				.then(() => {
-					console.log('Username ustawiony:', user.username)
-					setDidSetUsername(true)
-				})
-				.catch(e => console.error('Błąd ustawiania username:', e))
-		}
-	}, [isLoaded, user, didSetUsername])
+
 	return (
 		<Tab.Navigator screenOptions={{ headerShown: false }}>
 			<Tab.Screen
