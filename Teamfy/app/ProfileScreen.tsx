@@ -60,9 +60,9 @@ export default function ProfileScreen() {
 			console.error('Błąd przy usuwaniu zdjęcia profilowego:', error)
 		}
 	}
-	useEffect(() => {
-		console.log('Użytkownik:', JSON.stringify(user, null, 2))
-	}, [user])
+	// useEffect(() => {
+	// 	console.log('Użytkownik:', JSON.stringify(user, null, 2))
+	// }, [user])
 	if (!isLoaded || !user) {
 		return <Text>Loading...</Text>
 	}
@@ -85,7 +85,7 @@ export default function ProfileScreen() {
 						<View style={styles.infoSection}>
 				
 							<Text style={styles.label}>USERNAME</Text>
-							<Text style={styles.infoText}>{user?.username || user?.primaryEmailAddress?.emailAddress.split('@')[0]}</Text>
+							<Text style={styles.infoText}>{user?.unsafeMetadata.username as string }</Text>
 							<View style={styles.divider} />
 
 							<Text style={styles.label}>EMAIL</Text>

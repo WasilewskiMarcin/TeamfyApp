@@ -6,21 +6,21 @@ import Loader from '@/components/Loader'
 
 export default function SafeUserProvider({ children }: { children: React.ReactNode }) {
 	
+	// const createUser = useMutation(api.users.createUser)
+	// const currentUser = useQuery(api.users.getUserByClerkId, user?.id ? { clerkId: user.id } : 'skip')
+	
 	const { user, isLoaded } = useUser()
-	const createUser = useMutation(api.users.createUser)
-	const currentUser = useQuery(api.users.getUserByClerkId, user?.id ? { clerkId: user.id } : 'skip')
-
 	const [loading, setLoading] = useState(true)
-
+	
 	useEffect(() => {
 		const setupUser = async () => {
 			if (!isLoaded) return //if clerk is not loaded yet, do nothing
 
 			// if currentUser exists, do nothing
-			if (currentUser) {
-				setLoading(false)
-				return
-			}
+			// if (currentUser) {
+			// 	setLoading(false)
+			// 	return
+			// }
 
 			// if dont have user data
 			if (!user) {
@@ -29,24 +29,24 @@ export default function SafeUserProvider({ children }: { children: React.ReactNo
 				return
 			}
 			// if user not exists in Convex, create it
-			if (!currentUser && user) {
-				try {
-					await createUser({
-						username: user.username || user.primaryEmailAddress?.emailAddress?.split('@')[0] || '',
-						fullname: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-						email: user.primaryEmailAddress?.emailAddress || '',
-						image: user.imageUrl || '',
-						clerkId: user.id,
-					})
-					console.log('✅ User created in Convex!')
-				} catch (error) {
-					console.error('Error creating user in Convex:', error)
-				}
-			}
-			setLoading(false)
+		// 	if (!currentUser && user) {
+		// 		try {
+		// 			await createUser({
+		// 				username: user.username || user.primaryEmailAddress?.emailAddress?.split('@')[0] || '',
+		// 				fullname: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+		// 				email: user.primaryEmailAddress?.emailAddress || '',
+		// 				image: user.imageUrl || '',
+		// 				clerkId: user.id,
+		// 			})
+		// 			console.log('✅ User created in Convex!')
+		// 		} catch (error) {
+		// 			console.error('Error creating user in Convex:', error)
+		// 		}
+		// 	}
+		// 	setLoading(false)
 		}
 		setupUser()
-	}, [isLoaded, currentUser, user])
+	}, [isLoaded, user])
 	if (loading) {
 		return <Loader />
 	}

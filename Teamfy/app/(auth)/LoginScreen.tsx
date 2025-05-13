@@ -6,9 +6,10 @@ import { COLORS } from '@/constants/theme'
 import { useSSO, useSignIn, useSignUp, useUser } from '@clerk/clerk-expo'
 // import { useRouter } from 'expo-router'
 import { Alert } from 'react-native'
-
+import { useEffect } from 'react'
 export default function LoginScreen() {
 	const { startSSOFlow } = useSSO()
+
 	// const router = useRouter()
 
 	const { signIn, setActive: setActiveSignIn, isLoaded: signInLoaded } = useSignIn()
@@ -78,26 +79,23 @@ export default function LoginScreen() {
 		}
 	}
 	const handleGoogleSignIn = async () => {
-		const {user, isLoaded} = useUser()
 		try {
 			console.log('Starting Google SSO...')
 			const { createdSessionId, setActive } = await startSSOFlow({ strategy: 'oauth_google' })
 			console.log('Google SSO finished', createdSessionId)
 
 			if (setActive && createdSessionId) {
-				if (user && isLoaded) {
-					user.username = email.split('@')[0]
-				}
 				await setActive({ session: createdSessionId })
-				// router.replace('../(tabs)')
 			}
+	
 		} catch (error) {
 			console.error('0Auth error:', error)
 			Alert.alert('Login Error', 'Something went wrong. Please try again.')
 			// router.replace('/login')
 		}
 	}
-	
+
+
 	return (
 		<View style={styles.container}>
 			{/* Branding */}

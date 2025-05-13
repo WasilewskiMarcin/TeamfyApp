@@ -1,4 +1,4 @@
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import ClerkAndConvexProvider from '@/providers/ClerkAndConvexProvider'
 import SafeUserProvider from '@/providers/SafeUserProvider'
 import { useAuth } from '@clerk/clerk-expo'
@@ -13,6 +13,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import ProfileScreen from './ProfileScreen'
 import SettingsScreen from './(tabs)/Settings/SettingsScreen'
 import { NavigationContainer } from '@react-navigation/native'
+import { useEffect, useState } from 'react'
+import { useUser } from '@clerk/clerk-expo'
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -21,13 +23,11 @@ export default function App() {
 	return (
 		<ClerkAndConvexProvider>
 			<SafeAreaProvider>
-
-					<SafeUserProvider>
-						<NavigationContainer>
-							<MainNavigator />
-						</NavigationContainer>
-					</SafeUserProvider>
-
+				<SafeUserProvider>
+					<NavigationContainer>
+						<MainNavigator />
+					</NavigationContainer>
+				</SafeUserProvider>
 			</SafeAreaProvider>
 		</ClerkAndConvexProvider>
 	)
@@ -48,6 +48,21 @@ function MainNavigator() {
 	}
 }
 function RootTabNavigation() {
+	const { user, isLoaded } = useUser()
+	const [didSetUsername, setDidSetUsername] = useState(false)
+	useEffect(() => {
+		if(didSetUsername) return
+		if (isLoaded && user && !didSetUsername) {
+			const fallbackUsername = user.primaryEmailAddress?.emailAddress.split('@')[0] ?? ''
+			user
+				.update({ username: user.username || fallbackUsername })
+				.then(() => {
+					console.log('Username ustawiony:', user.username)
+					setDidSetUsername(true)
+				})
+				.catch(e => console.error('Błąd ustawiania username:', e))
+		}
+	}, [isLoaded, user, didSetUsername])
 	return (
 		<Tab.Navigator screenOptions={{ headerShown: false }}>
 			<Tab.Screen
@@ -82,11 +97,9 @@ function RootTabNavigation() {
 	)
 }
 function SettingsNavigator() {
-
 	return (
 		<Stack.Navigator screenOptions={{ headerShown: false }}>
 			<Stack.Screen name='Settings' component={SettingsScreen} />
-			
 		</Stack.Navigator>
 	)
 }
