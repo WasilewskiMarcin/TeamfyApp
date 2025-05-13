@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { styles } from '@/styles/auth.styles'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { COLORS } from '@/constants/theme'
-import { useSSO, useSignIn, useSignUp } from '@clerk/clerk-expo'
+import { useSSO, useSignIn, useSignUp, useUser } from '@clerk/clerk-expo'
 // import { useRouter } from 'expo-router'
 import { Alert } from 'react-native'
 
@@ -45,8 +45,9 @@ export default function LoginScreen() {
 		if (!signUpLoaded) return
 		try {
 			await signUp.create({
+				username: email.split('@')[0],
 				emailAddress: email,
-				password,
+				password: password,
 			})
 			await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
 			setPendingVerify(true)
@@ -77,12 +78,16 @@ export default function LoginScreen() {
 		}
 	}
 	const handleGoogleSignIn = async () => {
+		const {user, isLoaded} = useUser()
 		try {
 			console.log('Starting Google SSO...')
 			const { createdSessionId, setActive } = await startSSOFlow({ strategy: 'oauth_google' })
 			console.log('Google SSO finished', createdSessionId)
 
 			if (setActive && createdSessionId) {
+				if (user && isLoaded) {
+					user.username = email.split('@')[0]
+				}
 				await setActive({ session: createdSessionId })
 				// router.replace('../(tabs)')
 			}
@@ -92,6 +97,7 @@ export default function LoginScreen() {
 			// router.replace('/login')
 		}
 	}
+	
 	return (
 		<View style={styles.container}>
 			{/* Branding */}

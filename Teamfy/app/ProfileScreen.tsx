@@ -7,7 +7,7 @@ import { Image } from 'expo-image'
 import ImagePickerComponent from '@/components/ImagePicker'
 import { useEffect } from 'react'
 export default function ProfileScreen() {
-	const { user } = useUser()
+	const { user, isLoaded } = useUser()
 
 	const [showImagePicker, setShowImagePicker] = useState(false)
 
@@ -60,8 +60,12 @@ export default function ProfileScreen() {
 			console.error('Błąd przy usuwaniu zdjęcia profilowego:', error)
 		}
 	}
-	const [name, setName] = useState<string>(user?.firstName || '')
-
+	useEffect(() => {
+		console.log('Użytkownik:', JSON.stringify(user, null, 2))
+	}, [user])
+	if (!isLoaded || !user) {
+		return <Text>Loading...</Text>
+	}
 	return (
 		<TopBackNavigator>
 			<View style={styles.container}>
@@ -77,10 +81,21 @@ export default function ProfileScreen() {
 							contentFit='cover'
 						/>
 					</TouchableOpacity>
-					<View style={styles.inputContainers}>
-						<View style={styles.inputContainer}>
-							<Text style={styles.textBeforeInfput}>Name:</Text>
-							<TextInput value={name} onChangeText={setName} style={styles.input} placeholder='Enter your name' />
+					<View style={styles.infoContainer}>
+						<View style={styles.infoSection}>
+				
+							<Text style={styles.label}>USERNAME</Text>
+							<Text style={styles.infoText}>{user?.username || user?.primaryEmailAddress?.emailAddress.split('@')[0]}</Text>
+							<View style={styles.divider} />
+
+							<Text style={styles.label}>EMAIL</Text>
+							<Text style={styles.infoText}>{user?.primaryEmailAddress?.emailAddress}</Text>
+							<View style={styles.divider} />
+
+
+							<Text style={styles.label}>ID</Text>
+							<Text style={styles.infoText}>{user?.id}</Text>
+							<View style={styles.divider} />
 						</View>
 					</View>
 				</View>
@@ -96,19 +111,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 	},
-	inputContainers: {
-		flex: 1,
-		alignItems: 'center',
-	},
-	inputContainer: {
-		flex: 1,
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-		gap: 10,
-	},
-	textBeforeInfput:{
-		marginTop: 20,
-	},
+
 	header: {
 		flexDirection: 'row',
 		gap: 20,
@@ -141,12 +144,27 @@ const styles = StyleSheet.create({
 	picker: {
 		marginTop: 20,
 	},
-	input: {
-		borderWidth: 1,
-		borderColor: '#ccc',
-		borderRadius: 5,
-		padding: 10,
+	infoContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
 		marginTop: 10,
-		width: '80%',
+	},
+	infoSection: {
+		width: '100%',
+		paddingHorizontal: 20,
+	},
+	label: {
+		fontSize: 14,
+		color: '#888',
+	},
+	infoText: {
+		fontSize: 14,
+		color: '#000',
+	},
+	divider: {
+		height: 1,
+		backgroundColor: '#e0e0e0',
+		marginVertical: 5,
 	},
 })
