@@ -1,15 +1,18 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput, ScrollView } from 'react-native'
 import TopBackNavigator from '@/components/TopBarComponents/TopBackNavigator'
 import { COLORS } from '@/constants/theme'
 import { useUser } from '@clerk/clerk-expo'
 import { Image } from 'expo-image'
 import ImagePickerComponent from '@/components/ImagePicker'
 import { useEffect } from 'react'
+import { Ionicons } from '@expo/vector-icons'
 export default function ProfileScreen() {
 	const { user, isLoaded } = useUser()
 
 	const [showImagePicker, setShowImagePicker] = useState(false)
+
+	const [modalVisible, setModalVisible] = useState(false)
 
 	const handleImagePicked = async (uri: string) => {
 		setShowImagePicker(false)
@@ -69,36 +72,60 @@ export default function ProfileScreen() {
 	return (
 		<TopBackNavigator>
 			<View style={styles.container}>
-				<View style={styles.header}>
-					<TouchableOpacity onPress={onAvatarPress}>
-						<Image
-							source={
-								typeof user?.unsafeMetadata?.imageUrl === 'string'
-									? { uri: user.unsafeMetadata.imageUrl }
-									: { uri: user?.imageUrl }
-							}
-							style={styles.avatar}
-							contentFit='cover'
-						/>
-					</TouchableOpacity>
+				<View style={styles.profileContainer}>
+					<View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: 100 }}>
+						<TouchableOpacity onPress={onAvatarPress}>
+							<Image
+								source={
+									typeof user?.unsafeMetadata?.imageUrl === 'string'
+										? { uri: user.unsafeMetadata.imageUrl }
+										: { uri: user?.imageUrl }
+								}
+								style={styles.avatar}
+								contentFit='cover'
+							/>
+						</TouchableOpacity>
+
+						{/* <View style={{ flexDirection: 'column', alignItems: 'center', gap: 5, marginTop: 10 }}>
+							<TouchableOpacity style={{ ...styles.infoSectionModalBtn, width: '100%' }}>
+								<Text style={{ fontSize: 12, color: COLORS.primary }}>Select avatar</Text>
+							</TouchableOpacity>
+							<TouchableOpacity style={{ ...styles.infoSectionModalBtn, width: '100%' }}>
+								<Text style={{ fontSize: 12, color: COLORS.primary }}>Select frame</Text>
+							</TouchableOpacity>
+						</View> */}
+					</View>
+
 					<View style={styles.infoContainer}>
-						<View style={styles.infoSection}>
-				
-							<Text style={styles.label}>USERNAME</Text>
-							<Text style={styles.infoText}>{user?.unsafeMetadata.username as string }</Text>
-							<View style={styles.divider} />
+						<ScrollView style={{ maxHeight: '95%' }}>
+							<View style={styles.infoSection}>
+								<Text style={styles.label}>USERNAME</Text>
+								<Text style={styles.infoText}>{user?.primaryEmailAddress?.emailAddress.split('@')[0]}</Text>
+								<View style={styles.divider} />
 
-							<Text style={styles.label}>EMAIL</Text>
-							<Text style={styles.infoText}>{user?.primaryEmailAddress?.emailAddress}</Text>
-							<View style={styles.divider} />
+								<Text style={styles.label}>EMAIL</Text>
+								<Text style={styles.infoText}>{user?.primaryEmailAddress?.emailAddress}</Text>
+								<View style={styles.divider} />
 
+								<Text style={styles.label}>BIO</Text>
 
-							<Text style={styles.label}>ID</Text>
-							<Text style={styles.infoText}>{user?.id}</Text>
-							<View style={styles.divider} />
-						</View>
+								<Text style={styles.infoText}>
+									Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem facere nihil incidunt obcaecati
+									mollitia. Quam quidem earum explicabo culpa non sit laboriosam veniam officia adipisci voluptatem
+									exercitationem cumque, aut magnam.
+								</Text>
+							</View>
+						</ScrollView>
+						<TouchableOpacity
+							onPress={() => setModalVisible(true)}
+							style={{ position: 'absolute', right: 10, top: 10, gap: 5 }}>
+							<View style={styles.infoSectionModalBtn}>
+								<Ionicons name='pencil' size={20} color={COLORS.primary} />
+							</View>
+						</TouchableOpacity>
 					</View>
 				</View>
+				<View style={{ ...styles.profileContainer, ...styles.statsContainer }}></View>
 
 				{showImagePicker && <ImagePickerComponent onImagePicked={handleImagePicked} style={styles.picker} />}
 			</View>
@@ -111,17 +138,34 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 	},
+	infoSectionModalBtn: {
+		width: 30,
+		height: 30,
+		borderRadius: 10,
+		backgroundColor: COLORS.white,
+		justifyContent: 'center',
+		alignItems: 'center',
 
-	header: {
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 4,
+		},
+		shadowOpacity: 0.15,
+		shadowRadius: 12,
+		elevation: 5,
+	},
+
+	profileContainer: {
 		flexDirection: 'row',
-		gap: 20,
+
 		padding: 5,
-		marginTop: 10,
+		marginTop: 6,
 		width: '95%',
 		height: 200,
 		backgroundColor: COLORS.background,
 		borderRadius: 10,
-		marginBottom: 20,
+
 		//iOS
 		shadowColor: '#000',
 		shadowOffset: { width: 0, height: 2 },
@@ -132,12 +176,15 @@ const styles = StyleSheet.create({
 		borderWidth: 1.2,
 		borderColor: '#ccc',
 	},
+	statsContainer: {
+		marginTop: 5,
+		height: 400,
+	},
 	avatar: {
-		width: 86,
-		height: 86,
-		left: 5,
+		width: 90,
+		height: 90,
 		top: 5,
-		borderRadius: 43,
+		borderRadius: 45,
 		borderWidth: 2,
 		borderColor: COLORS.grey,
 	},
@@ -148,11 +195,12 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		marginTop: 10,
+		// backgroundColor: COLORS.surfaceLight,
+		// marginTop: 10,
 	},
 	infoSection: {
 		width: '100%',
-		paddingHorizontal: 20,
+		paddingHorizontal: 15,
 	},
 	label: {
 		fontSize: 14,
