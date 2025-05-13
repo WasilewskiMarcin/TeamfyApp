@@ -7,6 +7,7 @@ export default defineSchema({
 		// createdAt: v.date('createdAt'), //date when user was created but created by convex too
 		username: v.string(), //MarcinW
 		bio: v.optional(v.string()), //I am a software engineer
+		image: v.string(), //https://example.com/image.png
 		clerkId: v.string(), //clerk id
 	}).index('by_clerkId', ['clerkId']), //get user by clerkId  example: getUserByClerkId(123) => {id: 123, username: 'MarcinW', fullname: 'Marcin Wojciechowski', email: mw@gmail.com, bio: 'I am a software engineer', image: 'https://example.com/image.png', clerkId: 123}
 })
