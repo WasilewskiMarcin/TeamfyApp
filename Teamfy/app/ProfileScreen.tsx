@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView } from 'react-native'
 import TopBackNavigator from '@/components/TopBarComponents/TopBackNavigator'
 import { COLORS } from '@/constants/theme'
 import { useUser } from '@clerk/clerk-expo'
 import { Image } from 'expo-image'
 import ImagePickerComponent from '@/components/ImagePicker'
-import { useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 export default function ProfileScreen() {
 	const { user, isLoaded } = useUser()

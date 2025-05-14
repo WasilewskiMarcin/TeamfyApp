@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity, Alert, StyleSheet, Image } from 'react-native'
+import { View, Alert, StyleSheet, Image } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 
 type ImagePickerProps = {

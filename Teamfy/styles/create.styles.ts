@@ -1,4 +1,3 @@
-// styles/create.styles.ts
 import { StyleSheet, Dimensions } from "react-native";
 import { COLORS } from "@/constants/theme";
 

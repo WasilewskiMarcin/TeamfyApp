@@ -13,8 +13,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import ProfileScreen from './ProfileScreen'
 import SettingsScreen from './(tabs)/Settings/SettingsScreen'
 import { NavigationContainer } from '@react-navigation/native'
-import { useEffect, useState } from 'react'
-import { useUser } from '@clerk/clerk-expo'
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()

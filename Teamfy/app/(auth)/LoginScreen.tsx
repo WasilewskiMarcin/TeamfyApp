@@ -1,5 +1,5 @@
-import { View, Text, Image, TouchableOpacity, TextInput, Alert } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native'
+import React, { useState } from 'react'
 import { styles } from '@/styles/auth.styles'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
 import { COLORS } from '@/constants/theme'
