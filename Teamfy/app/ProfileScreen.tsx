@@ -10,11 +10,17 @@ import { TouchableWithoutFeedback } from 'react-native'
 import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import { useMutation } from 'convex/react'
+import { Keyboard } from 'react-native'
+import { KeyboardAvoidingView, Platform } from 'react-native'
+
 export default function ProfileScreen() {
 	const { user, isLoaded } = useUser()
 	const convexUser = useQuery(api.users.getUserByClerkId, { clerkId: user?.id || '' })
 	const updateUser = useMutation(api.users.updateUser)
 	const [showImagePicker, setShowImagePicker] = useState(false)
+	const isEmailUser =
+		user?.primaryEmailAddress !== null &&
+		!user?.externalAccounts?.some(acc => String(acc.provider) === 'oauth_google' || acc.provider === 'google')
 
 	const [newUsername, setNewUsername] = useState('')
 	const [newBio, setNewBio] = useState('')
@@ -25,17 +31,60 @@ export default function ProfileScreen() {
 
 	const handleUpdateUser = async () => {
 		try {
-			await updateUser({
-				clerkId: user?.id || '',
-				username: newUsername,
-				bio: newBio,
-			})
+			// First update username and bio if needed
+			if (newUsername || newBio) {
+				await updateUser({
+					clerkId: user?.id || '',
+					username: newUsername || convexUser?.username,
+					bio: newBio || convexUser?.bio,
+				})
+			}
+
+			// Handle password change if needed
+			if (showPasswordFields && isEmailUser) {
+				if (!oldPassword || !newPassword) {
+					Alert.alert('Error', 'Please fill in old and new password.')
+					return
+				}
+
+				try {
+					// Update password directly using Clerk's updatePassword method
+					await user?.updatePassword({
+						currentPassword: oldPassword,
+						newPassword: newPassword,
+					})
+
+					Alert.alert('Success', 'Password changed successfully.')
+					setOldPassword('')
+					setNewPassword('')
+					setShowPasswordFields(false)
+				} catch (error) {
+					console.error('Password update error:', error)
+
+					// Better error handling with specific messages
+					if (
+						error instanceof Error &&
+						'errors' in error &&
+						Array.isArray((error as any).errors) &&
+						(error as any).errors.length > 0
+					) {
+						const errorMessage = (error as any).errors[0]?.message || 'Password change failed'
+						Alert.alert('Error', errorMessage)
+					} else {
+						Alert.alert('Error', 'Old password is incorrect or there was a problem changing your password.')
+					}
+					return
+				}
+			}
+
+			// Close the modal regardless
 			setInfoModalVisible(false)
 		} catch (error) {
-			console.error('Błąd przy aktualizacji użytkownika:', error)
-			Alert.alert('Błąd', 'Nie udało się zaktualizować profilu.')
+			console.error('Error updating profile:', error)
+			Alert.alert('Error', 'Failed to update profile.')
 		}
 	}
+
 	const handleImagePicked = async (uri: string) => {
 		setShowImagePicker(false)
 		try {
@@ -143,7 +192,14 @@ export default function ProfileScreen() {
 							transparent={true}
 							animationType='fade'
 							onRequestClose={() => setInfoModalVisible(false)}>
-							<TouchableWithoutFeedback onPress={() => setInfoModalVisible(false)}>
+							<TouchableWithoutFeedback
+								onPress={() => {
+									setNewUsername('')
+									setNewBio('')
+									setOldPassword('')
+									setNewPassword('')
+									setInfoModalVisible(false)
+								}}>
 								<View
 									style={{
 										flex: 1,
@@ -151,95 +207,106 @@ export default function ProfileScreen() {
 										alignItems: 'center',
 										backgroundColor: 'rgba(0,0,0,0.2)',
 									}}>
-									<TouchableWithoutFeedback onPress={() => {}}>
-										<View style={{ width: '90%', backgroundColor: COLORS.background, padding: 20, borderRadius: 10 }}>
-											<Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Edit Profile</Text>
-											<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Username</Text>
-											<TextInput
-												placeholder={convexUser?.username ?? 'Loading...'}
-												value={newUsername}
-												onChangeText={setNewUsername}
-												style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
-											/>
-											<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>BIO:</Text>
-											<TextInput
-												placeholder={convexUser?.bio ?? 'No bio yet'}
-												value={newBio}
-												onChangeText={setNewBio}
-												style={{ borderWidth: 1, height: 100, marginBottom: 10, padding: 8, borderRadius: 5 }}
-												multiline={true}
-												textAlignVertical='top'
-											/>
-											{!showPasswordFields ? (
+									<KeyboardAvoidingView
+										behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+										style={{ width: '100%', alignItems: 'center' }}>
+				
+										<TouchableWithoutFeedback
+											onPress={() => {
+												Keyboard.dismiss()
+											}}>
+											<View style={{ width: '90%', backgroundColor: COLORS.background, padding: 20, borderRadius: 10 }}>
+												<Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Edit Profile</Text>
+												<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Username</Text>
+												<TextInput
+													placeholder={convexUser?.username ?? 'Loading...'}
+													value={newUsername}
+													onChangeText={setNewUsername}
+													style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
+												/>
+												<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>BIO:</Text>
+												<TextInput
+													placeholder={convexUser?.bio ?? 'No bio yet'}
+													value={newBio}
+													onChangeText={setNewBio}
+													style={{ borderWidth: 1, height: 100, marginBottom: 10, padding: 8, borderRadius: 5 }}
+													multiline={true}
+													textAlignVertical='top'
+												/>
+												{isEmailUser &&
+													(!showPasswordFields ? (
+														<TouchableOpacity
+															onPress={() => setShowPasswordFields(true)}
+															style={{
+																backgroundColor: COLORS.primary,
+																padding: 10,
+																borderRadius: 5,
+																alignItems: 'center',
+																marginBottom: 10,
+															}}>
+															<Text style={{ color: '#fff' }}>Change password</Text>
+														</TouchableOpacity>
+													) : (
+														<>
+															<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Old password</Text>
+															<TextInput
+																placeholder='Old password'
+																secureTextEntry
+																value={oldPassword}
+																onChangeText={setOldPassword}
+																style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
+															/>
+															<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>New password</Text>
+															<TextInput
+																placeholder='New password'
+																secureTextEntry
+																value={newPassword}
+																onChangeText={setNewPassword}
+																style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
+															/>
+															<TouchableOpacity
+																onPress={() => setShowPasswordFields(false)}
+																style={{
+																	backgroundColor: '#ccc',
+																	padding: 8,
+																	borderRadius: 5,
+																	alignItems: 'center',
+																	marginBottom: 10,
+																}}>
+																<Text style={{ color: '#333' }}>Cancel password change</Text>
+															</TouchableOpacity>
+														</>
+													))}
 												<TouchableOpacity
-													onPress={() => setShowPasswordFields(true)}
+													onPress={handleUpdateUser}
 													style={{
 														backgroundColor: COLORS.primary,
 														padding: 10,
 														borderRadius: 5,
 														alignItems: 'center',
-														marginBottom: 10,
 													}}>
-													<Text style={{ color: '#fff' }}>Zmień hasło</Text>
+													<Text style={{ color: '#fff' }}>Save changes</Text>
 												</TouchableOpacity>
-											) : (
-												<>
-													<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Stare hasło</Text>
-													<TextInput
-														placeholder='Old password'
-														secureTextEntry
-														value={oldPassword}
-														onChangeText={setOldPassword}
-														style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
-													/>
-													<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Nowe hasło</Text>
-													<TextInput
-														placeholder='New password'
-														secureTextEntry
-														value={newPassword}
-														onChangeText={setNewPassword}
-														style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
-													/>
-													<TouchableOpacity
-														onPress={() => setShowPasswordFields(false)}
-														style={{
-															backgroundColor: '#ccc',
-															padding: 8,
-															borderRadius: 5,
-															alignItems: 'center',
-															marginBottom: 10,
-														}}>
-														<Text style={{ color: '#333' }}>Cancel password change</Text>
-													</TouchableOpacity>
-												</>
-											)}
-											<TouchableOpacity
-												onPress={handleUpdateUser}
-												style={{
-													backgroundColor: COLORS.primary,
-													padding: 10,
-													borderRadius: 5,
-													alignItems: 'center',
-												}}>
-												<Text style={{ color: '#fff' }}>Save changes</Text>
-											</TouchableOpacity>
-											<TouchableOpacity
-												onPress={() => {
-													setInfoModalVisible(false)
-													setNewUsername('')
-													setNewBio('')
-												}}
-												style={{
-													marginTop: 5,
-													backgroundColor: COLORS.primary,
-													padding: 10,
-													borderRadius: 5,
-													alignItems: 'center',
-												}}>
-												<Text style={{ color: '#fff' }}>Cancel</Text>
-											</TouchableOpacity>
-										</View>
-									</TouchableWithoutFeedback>
+												<TouchableOpacity
+													onPress={() => {
+														setNewUsername('')
+														setNewBio('')
+														setOldPassword('')
+														setNewPassword('')
+														setInfoModalVisible(false)
+													}}
+													style={{
+														marginTop: 5,
+														backgroundColor: COLORS.primary,
+														padding: 10,
+														borderRadius: 5,
+														alignItems: 'center',
+													}}>
+													<Text style={{ color: '#fff' }}>Cancel</Text>
+												</TouchableOpacity>
+											</View>
+										</TouchableWithoutFeedback>
+									</KeyboardAvoidingView>
 								</View>
 							</TouchableWithoutFeedback>
 						</Modal>
