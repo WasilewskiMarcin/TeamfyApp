@@ -71,7 +71,7 @@ export default function ProfileScreen() {
 	return (
 		<TopBackNavigator>
 			<View style={styles.container}>
-				<View style={styles.profileContainer}>
+				<View style={{ ...styles.sectionContainer, ...styles.profileContainer }}>
 					<View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: 100 }}>
 						<TouchableOpacity onPress={onAvatarPress}>
 							<Image
@@ -124,7 +124,7 @@ export default function ProfileScreen() {
 						</TouchableOpacity>
 					</View>
 				</View>
-				<View style={{ ...styles.profileContainer, ...styles.statsContainer }}></View>
+				<View style={{ ...styles.sectionContainer, ...styles.statsContainer }}></View>
 
 				{showImagePicker && <ImagePickerComponent onImagePicked={handleImagePicked} style={styles.picker} />}
 			</View>
@@ -136,6 +136,8 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		alignItems: 'center',
+
+		marginTop: 6,
 	},
 	infoSectionModalBtn: {
 		width: 30,
@@ -144,7 +146,6 @@ const styles = StyleSheet.create({
 		backgroundColor: COLORS.white,
 		justifyContent: 'center',
 		alignItems: 'center',
-
 		shadowColor: '#000',
 		shadowOffset: {
 			width: 0,
@@ -154,17 +155,11 @@ const styles = StyleSheet.create({
 		shadowRadius: 12,
 		elevation: 5,
 	},
-
-	profileContainer: {
-		flexDirection: 'row',
-
-		padding: 5,
-		marginTop: 6,
+	sectionContainer: {
 		width: '95%',
-		height: 200,
 		backgroundColor: COLORS.background,
 		borderRadius: 10,
-
+		padding: 5,
 		//iOS
 		shadowColor: '#000',
 		shadowOffset: { width: 0, height: 2 },
@@ -174,6 +169,10 @@ const styles = StyleSheet.create({
 		elevation: 5,
 		borderWidth: 1.2,
 		borderColor: '#ccc',
+	},
+	profileContainer: {
+		flexDirection: 'row',
+		height: 200,
 	},
 	statsContainer: {
 		marginTop: 5,
