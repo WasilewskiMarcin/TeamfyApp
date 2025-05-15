@@ -7,18 +7,35 @@ import { Image } from 'expo-image'
 import ImagePickerComponent from '@/components/ImagePicker'
 import { Ionicons } from '@expo/vector-icons'
 import { TouchableWithoutFeedback } from 'react-native'
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import { useMutation } from 'convex/react'
 export default function ProfileScreen() {
 	const { user, isLoaded } = useUser()
-
+	const convexUser = useQuery(api.users.getUserByClerkId, { clerkId: user?.id || '' })
+	const updateUser = useMutation(api.users.updateUser)
 	const [showImagePicker, setShowImagePicker] = useState(false)
 
-	const [infoModalVisible, setInfoModalVisible] = useState(false)
-	const [oldPassword, setOldPassword] = useState('')
-	const [showPasswordFields, setShowPasswordFields] = useState(false)
-	const [newPassword, setNewPassword] = useState('')
 	const [newUsername, setNewUsername] = useState('')
 	const [newBio, setNewBio] = useState('')
+	const [infoModalVisible, setInfoModalVisible] = useState(false)
+	const [showPasswordFields, setShowPasswordFields] = useState(false)
+	const [oldPassword, setOldPassword] = useState('')
+	const [newPassword, setNewPassword] = useState('')
 
+	const handleUpdateUser = async () => {
+		try {
+			await updateUser({
+				clerkId: user?.id || '',
+				username: newUsername,
+				bio: newBio,
+			})
+			setInfoModalVisible(false)
+		} catch (error) {
+			console.error('Błąd przy aktualizacji użytkownika:', error)
+			Alert.alert('Błąd', 'Nie udało się zaktualizować profilu.')
+		}
+	}
 	const handleImagePicked = async (uri: string) => {
 		setShowImagePicker(false)
 		try {
@@ -67,7 +84,7 @@ export default function ProfileScreen() {
 			console.error('Błąd przy usuwaniu zdjęcia profilowego:', error)
 		}
 	}
-	
+
 	if (!isLoaded || !user) {
 		return <Text>Loading...</Text>
 	}
@@ -102,7 +119,7 @@ export default function ProfileScreen() {
 						<ScrollView style={{ maxHeight: '95%' }}>
 							<View style={styles.infoSection}>
 								<Text style={styles.label}>USERNAME</Text>
-								<Text style={styles.infoText}>{user?.primaryEmailAddress?.emailAddress.split('@')[0]}</Text>
+								<Text style={styles.infoText}>{convexUser?.username ?? 'Loading...'}</Text>
 								<View style={styles.divider} />
 
 								<Text style={styles.label}>EMAIL</Text>
@@ -111,11 +128,7 @@ export default function ProfileScreen() {
 
 								<Text style={styles.label}>BIO</Text>
 
-								<Text style={styles.infoText}>
-									Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem facere nihil incidunt obcaecati
-									mollitia. Quam quidem earum explicabo culpa non sit laboriosam veniam officia adipisci voluptatem
-									exercitationem cumque, aut magnam.
-								</Text>
+								<Text style={styles.infoText}>{convexUser?.bio ?? 'No bio yet'}</Text>
 							</View>
 						</ScrollView>
 						<TouchableOpacity
@@ -143,14 +156,14 @@ export default function ProfileScreen() {
 											<Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Edit Profile</Text>
 											<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Username</Text>
 											<TextInput
-												placeholder='New username'
+												placeholder={convexUser?.username ?? 'Loading...'}
 												value={newUsername}
 												onChangeText={setNewUsername}
 												style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
 											/>
 											<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>BIO:</Text>
 											<TextInput
-												placeholder='BIO'
+												placeholder={convexUser?.bio ?? 'No bio yet'}
 												value={newBio}
 												onChangeText={setNewBio}
 												style={{ borderWidth: 1, height: 100, marginBottom: 10, padding: 8, borderRadius: 5 }}
@@ -201,7 +214,7 @@ export default function ProfileScreen() {
 												</>
 											)}
 											<TouchableOpacity
-												onPress={() => setInfoModalVisible(false)}
+												onPress={handleUpdateUser}
 												style={{
 													backgroundColor: COLORS.primary,
 													padding: 10,
@@ -211,7 +224,11 @@ export default function ProfileScreen() {
 												<Text style={{ color: '#fff' }}>Save changes</Text>
 											</TouchableOpacity>
 											<TouchableOpacity
-												onPress={() => setInfoModalVisible(false)}
+												onPress={() => {
+													setInfoModalVisible(false)
+													setNewUsername('')
+													setNewBio('')
+												}}
 												style={{
 													marginTop: 5,
 													backgroundColor: COLORS.primary,

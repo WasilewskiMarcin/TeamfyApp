@@ -38,3 +38,25 @@ export const createUser = mutation({
 		})
 	},
 })
+export const updateUser = mutation({
+  args: {
+    clerkId: v.string(),
+    username: v.optional(v.string()),
+    bio: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_clerkId', q => q.eq('clerkId', args.clerkId))
+      .first()
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    await ctx.db.patch(user._id, {
+      ...(args.username !== undefined && { username: args.username }),
+      ...(args.bio !== undefined && { bio: args.bio }),
+    })
+  },
+})
