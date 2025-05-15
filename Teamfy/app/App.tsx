@@ -38,7 +38,7 @@ function MainNavigator() {
 		return (
 			<Stack.Navigator screenOptions={{ headerShown: false }}>
 				<Stack.Screen name='Tabs' component={RootTabNavigation} />
-				<Stack.Screen name='Profile' component={ProfileScreen} />
+				<Stack.Screen name='Profile' component={ProfileScreen}  />
 			</Stack.Navigator>
 		)
 	} else {

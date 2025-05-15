@@ -7,16 +7,17 @@ import { Image } from 'expo-image'
 import ImagePickerComponent from '@/components/ImagePicker'
 import { Ionicons } from '@expo/vector-icons'
 import { TouchableWithoutFeedback } from 'react-native'
-import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import { useMutation } from 'convex/react'
 import { Keyboard } from 'react-native'
 import { KeyboardAvoidingView, Platform } from 'react-native'
+import { useConvexUser } from '@/providers/ConvexUserContext'
 
 export default function ProfileScreen() {
 	const { user, isLoaded } = useUser()
-	const convexUser = useQuery(api.users.getUserByClerkId, { clerkId: user?.id || '' })
+	const { convexUser, setConvexUser } = useConvexUser()
 	const updateUser = useMutation(api.users.updateUser)
+
 	const [showImagePicker, setShowImagePicker] = useState(false)
 	const isEmailUser =
 		user?.primaryEmailAddress !== null &&
@@ -39,6 +40,11 @@ export default function ProfileScreen() {
 					bio: newBio || convexUser?.bio,
 				})
 			}
+			setConvexUser({
+				...convexUser!,
+				username: newUsername || convexUser?.username || '',
+				bio: newBio || convexUser?.bio || '',
+			})
 
 			// Handle password change if needed
 			if (showPasswordFields && isEmailUser) {
@@ -84,7 +90,6 @@ export default function ProfileScreen() {
 			Alert.alert('Error', 'Failed to update profile.')
 		}
 	}
-
 	const handleImagePicked = async (uri: string) => {
 		setShowImagePicker(false)
 		try {
@@ -210,7 +215,6 @@ export default function ProfileScreen() {
 									<KeyboardAvoidingView
 										behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 										style={{ width: '100%', alignItems: 'center' }}>
-				
 										<TouchableWithoutFeedback
 											onPress={() => {
 												Keyboard.dismiss()
