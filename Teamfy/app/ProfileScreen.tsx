@@ -34,10 +34,10 @@ export default function ProfileScreen() {
 		try {
 			// First update username and bio if needed
 			if (newUsername || newBio) {
-				// await updateProfile({
-				// 	username: newUsername || convexUser?.username,
-				// 	bio: newBio || convexUser?.bio,
-				// })
+				await updateProfile({
+					username: newUsername || convexUser?.username,
+					bio: newBio || convexUser?.bio,
+				})
 				setConvexUser({
 					...convexUser!,
 					username: newUsername || convexUser?.username || '',

@@ -63,6 +63,7 @@ export default function SafeUserProvider({ children }: { children: React.ReactNo
 				})
 		}
 	}, [isLoaded, user, currentUser, createUser])
+	
 	const updateProfile = async (data: Partial<Omit<ConvexUser, '_id' | 'clerkId'>>) => {
 		if (!convexUser) return
 		const updated = await updateUser({
@@ -72,21 +73,11 @@ export default function SafeUserProvider({ children }: { children: React.ReactNo
 		})
 		setConvexUser(updated)
 	}
-
 	useEffect(() => {
 		if (!currentUser) return
 
-		const syncUserProfile = async () => {
-			await updateProfile({
-				username: currentUser.username,
-				image: currentUser.image,
-				bio: currentUser.bio,
-			})
-			setConvexUser(currentUser)
-			setLoading(false)
-		}
-
-		syncUserProfile()
+		setConvexUser(currentUser)
+		setLoading(false)
 	}, [currentUser])
 
 	if (loading) {
