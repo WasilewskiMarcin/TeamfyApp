@@ -40,6 +40,7 @@ export const createUser = mutation({
 })
 export const updateUser = mutation({
   args: {
+	    _id: v.id('users'),
     clerkId: v.string(),
     username: v.optional(v.string()),
     bio: v.optional(v.string()),

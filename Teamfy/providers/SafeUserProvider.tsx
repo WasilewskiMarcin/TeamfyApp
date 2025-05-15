@@ -1,16 +1,43 @@
 import { useUser } from '@clerk/clerk-expo'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, createContext, useContext } from 'react'
 import Loader from '@/components/Loader'
-import { ConvexUserContext } from './ConvexUserContext'
+import { Id } from '@/convex/_generated/dataModel'
+
+export type ConvexUser = {
+	_id: Id<'users'>
+	username: string
+	image: string
+	bio?: string
+	clerkId: string
+}
+
+type ConvexUserContextType = {
+	convexUser: ConvexUser | null
+	setConvexUser: (user: ConvexUser) => void
+	updateProfile: (data: Partial<Omit<ConvexUser, '_id' | 'clerkId'>>) => Promise<void>
+}
+
+export const ConvexUserContext = createContext<ConvexUserContextType | undefined>(undefined)
+
+export const useConvexUser = () => {
+	const context = useContext(ConvexUserContext)
+	if (!context) {
+		throw new Error('useConvexUser must be used within a ConvexUserProvider')
+	}
+	return context
+}
+
 export default function SafeUserProvider({ children }: { children: React.ReactNode }) {
 	const { user, isLoaded } = useUser()
 	const [loading, setLoading] = useState(true)
-	const [convexUser, setConvexUser] = useState<any>(null)
+	const [convexUser, setConvexUser] = useState<ConvexUser | null>(null)
+
 	const createUser = useMutation(api.users.createUser)
+	const updateUser = useMutation(api.users.updateUser)
 	const currentUser = useQuery(api.users.getUserByClerkId, user?.id ? { clerkId: user.id } : 'skip')
-	// console.log('useQuery getUserByClerkId wywołane', new Date().toISOString(), currentUser)
+
 	useEffect(() => {
 		if (!isLoaded) return
 		if (!user) {
@@ -36,18 +63,39 @@ export default function SafeUserProvider({ children }: { children: React.ReactNo
 				})
 		}
 	}, [isLoaded, user, currentUser, createUser])
+	const updateProfile = async (data: Partial<Omit<ConvexUser, '_id' | 'clerkId'>>) => {
+		if (!convexUser) return
+		const updated = await updateUser({
+			_id: convexUser._id,
+			clerkId: convexUser.clerkId,
+			...data,
+		})
+		setConvexUser(updated)
+	}
 
-	// Efekt ustawiający convexUser gdy currentUser jest dostępny
 	useEffect(() => {
-		if (currentUser) {
+		if (!currentUser) return
+
+		const syncUserProfile = async () => {
+			await updateProfile({
+				username: currentUser.username,
+				image: currentUser.image,
+				bio: currentUser.bio,
+			})
 			setConvexUser(currentUser)
 			setLoading(false)
 		}
+
+		syncUserProfile()
 	}, [currentUser])
 
 	if (loading) {
 		return <Loader />
 	}
 
-	return <ConvexUserContext.Provider value={{ convexUser, setConvexUser }}>{children}</ConvexUserContext.Provider>
+	return (
+		<ConvexUserContext.Provider value={{ convexUser, setConvexUser, updateProfile }}>
+			{children}
+		</ConvexUserContext.Provider>
+	)
 }

@@ -11,11 +11,11 @@ import { api } from '@/convex/_generated/api'
 import { useMutation } from 'convex/react'
 import { Keyboard } from 'react-native'
 import { KeyboardAvoidingView, Platform } from 'react-native'
-import { useConvexUser } from '@/providers/ConvexUserContext'
+import { useConvexUser } from '@/providers/SafeUserProvider'
 
 export default function ProfileScreen() {
 	const { user, isLoaded } = useUser()
-	const { convexUser, setConvexUser } = useConvexUser()
+	const { convexUser, setConvexUser, updateProfile } = useConvexUser()
 	const updateUser = useMutation(api.users.updateUser)
 
 	const [showImagePicker, setShowImagePicker] = useState(false)
@@ -34,17 +34,16 @@ export default function ProfileScreen() {
 		try {
 			// First update username and bio if needed
 			if (newUsername || newBio) {
-				await updateUser({
-					clerkId: user?.id || '',
-					username: newUsername || convexUser?.username,
-					bio: newBio || convexUser?.bio,
+				// await updateProfile({
+				// 	username: newUsername || convexUser?.username,
+				// 	bio: newBio || convexUser?.bio,
+				// })
+				setConvexUser({
+					...convexUser!,
+					username: newUsername || convexUser?.username || '',
+					bio: newBio || convexUser?.bio || '',
 				})
 			}
-			setConvexUser({
-				...convexUser!,
-				username: newUsername || convexUser?.username || '',
-				bio: newBio || convexUser?.bio || '',
-			})
 
 			// Handle password change if needed
 			if (showPasswordFields && isEmailUser) {
@@ -383,13 +382,14 @@ const styles = StyleSheet.create({
 	infoContainer: {
 		flex: 1,
 		justifyContent: 'center',
-		alignItems: 'center',
+		// alignItems: 'center',
 		// backgroundColor: COLORS.surfaceLight,
 		// marginTop: 10,
 	},
 	infoSection: {
 		width: '100%',
 		paddingHorizontal: 15,
+		marginTop: 10,
 	},
 	label: {
 		fontSize: 14,
