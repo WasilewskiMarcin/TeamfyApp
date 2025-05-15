@@ -1,17 +1,23 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Modal, TextInput } from 'react-native'
 import TopBackNavigator from '@/components/TopBarComponents/TopBackNavigator'
 import { COLORS } from '@/constants/theme'
 import { useUser } from '@clerk/clerk-expo'
 import { Image } from 'expo-image'
 import ImagePickerComponent from '@/components/ImagePicker'
 import { Ionicons } from '@expo/vector-icons'
+import { TouchableWithoutFeedback } from 'react-native'
 export default function ProfileScreen() {
 	const { user, isLoaded } = useUser()
 
 	const [showImagePicker, setShowImagePicker] = useState(false)
 
-	const [modalVisible, setModalVisible] = useState(false)
+	const [infoModalVisible, setInfoModalVisible] = useState(false)
+	const [oldPassword, setOldPassword] = useState('')
+	const [showPasswordFields, setShowPasswordFields] = useState(false)
+	const [newPassword, setNewPassword] = useState('')
+	const [newUsername, setNewUsername] = useState('')
+	const [newBio, setNewBio] = useState('')
 
 	const handleImagePicked = async (uri: string) => {
 		setShowImagePicker(false)
@@ -26,7 +32,6 @@ export default function ProfileScreen() {
 			console.error('Błąd przy aktualizacji zdjęcia profilowego:', error)
 		}
 	}
-
 	const onAvatarPress = () => {
 		Alert.alert(
 			'Profile Picture',
@@ -62,9 +67,7 @@ export default function ProfileScreen() {
 			console.error('Błąd przy usuwaniu zdjęcia profilowego:', error)
 		}
 	}
-	// useEffect(() => {
-	// 	console.log('Użytkownik:', JSON.stringify(user, null, 2))
-	// }, [user])
+	
 	if (!isLoaded || !user) {
 		return <Text>Loading...</Text>
 	}
@@ -116,12 +119,113 @@ export default function ProfileScreen() {
 							</View>
 						</ScrollView>
 						<TouchableOpacity
-							onPress={() => setModalVisible(true)}
+							onPress={() => setInfoModalVisible(true)}
 							style={{ position: 'absolute', right: 10, top: 10, gap: 5 }}>
 							<View style={styles.infoSectionModalBtn}>
 								<Ionicons name='pencil' size={20} color={COLORS.primary} />
 							</View>
 						</TouchableOpacity>
+						<Modal
+							visible={infoModalVisible}
+							transparent={true}
+							animationType='fade'
+							onRequestClose={() => setInfoModalVisible(false)}>
+							<TouchableWithoutFeedback onPress={() => setInfoModalVisible(false)}>
+								<View
+									style={{
+										flex: 1,
+										justifyContent: 'center',
+										alignItems: 'center',
+										backgroundColor: 'rgba(0,0,0,0.2)',
+									}}>
+									<TouchableWithoutFeedback onPress={() => {}}>
+										<View style={{ width: '90%', backgroundColor: COLORS.background, padding: 20, borderRadius: 10 }}>
+											<Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Edit Profile</Text>
+											<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Username</Text>
+											<TextInput
+												placeholder='New username'
+												value={newUsername}
+												onChangeText={setNewUsername}
+												style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
+											/>
+											<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>BIO:</Text>
+											<TextInput
+												placeholder='BIO'
+												value={newBio}
+												onChangeText={setNewBio}
+												style={{ borderWidth: 1, height: 100, marginBottom: 10, padding: 8, borderRadius: 5 }}
+												multiline={true}
+												textAlignVertical='top'
+											/>
+											{!showPasswordFields ? (
+												<TouchableOpacity
+													onPress={() => setShowPasswordFields(true)}
+													style={{
+														backgroundColor: COLORS.primary,
+														padding: 10,
+														borderRadius: 5,
+														alignItems: 'center',
+														marginBottom: 10,
+													}}>
+													<Text style={{ color: '#fff' }}>Zmień hasło</Text>
+												</TouchableOpacity>
+											) : (
+												<>
+													<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Stare hasło</Text>
+													<TextInput
+														placeholder='Old password'
+														secureTextEntry
+														value={oldPassword}
+														onChangeText={setOldPassword}
+														style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
+													/>
+													<Text style={{ fontSize: 14, color: '#888', marginBottom: 5 }}>Nowe hasło</Text>
+													<TextInput
+														placeholder='New password'
+														secureTextEntry
+														value={newPassword}
+														onChangeText={setNewPassword}
+														style={{ borderWidth: 1, marginBottom: 10, padding: 8, borderRadius: 5 }}
+													/>
+													<TouchableOpacity
+														onPress={() => setShowPasswordFields(false)}
+														style={{
+															backgroundColor: '#ccc',
+															padding: 8,
+															borderRadius: 5,
+															alignItems: 'center',
+															marginBottom: 10,
+														}}>
+														<Text style={{ color: '#333' }}>Cancel password change</Text>
+													</TouchableOpacity>
+												</>
+											)}
+											<TouchableOpacity
+												onPress={() => setInfoModalVisible(false)}
+												style={{
+													backgroundColor: COLORS.primary,
+													padding: 10,
+													borderRadius: 5,
+													alignItems: 'center',
+												}}>
+												<Text style={{ color: '#fff' }}>Save changes</Text>
+											</TouchableOpacity>
+											<TouchableOpacity
+												onPress={() => setInfoModalVisible(false)}
+												style={{
+													marginTop: 5,
+													backgroundColor: COLORS.primary,
+													padding: 10,
+													borderRadius: 5,
+													alignItems: 'center',
+												}}>
+												<Text style={{ color: '#fff' }}>Cancel</Text>
+											</TouchableOpacity>
+										</View>
+									</TouchableWithoutFeedback>
+								</View>
+							</TouchableWithoutFeedback>
+						</Modal>
 					</View>
 				</View>
 				<View style={{ ...styles.sectionContainer, ...styles.statsContainer }}></View>
@@ -136,7 +240,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		alignItems: 'center',
-
 		marginTop: 6,
 	},
 	infoSectionModalBtn: {
