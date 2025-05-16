@@ -61,3 +61,9 @@ export const updateUser = mutation({
     })
   },
 })
+export const getAllUsernames= query({
+	handler: async (ctx)=>{
+		const users = await ctx.db.query('users').collect()
+		return users.map((u)=> ({username: u.username}))
+	}
+})

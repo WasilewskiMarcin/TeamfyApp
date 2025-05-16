@@ -7,8 +7,6 @@ import { Image } from 'expo-image'
 import ImagePickerComponent from '@/components/ImagePicker'
 import { Ionicons } from '@expo/vector-icons'
 import { TouchableWithoutFeedback } from 'react-native'
-import { api } from '@/convex/_generated/api'
-import { useMutation } from 'convex/react'
 import { Keyboard } from 'react-native'
 import { KeyboardAvoidingView, Platform } from 'react-native'
 import { useConvexUser } from '@/providers/SafeUserProvider'
@@ -16,7 +14,6 @@ import { useConvexUser } from '@/providers/SafeUserProvider'
 export default function ProfileScreen() {
 	const { user, isLoaded } = useUser()
 	const { convexUser, setConvexUser, updateProfile } = useConvexUser()
-	const updateUser = useMutation(api.users.updateUser)
 
 	const [showImagePicker, setShowImagePicker] = useState(false)
 	const isEmailUser =
@@ -32,12 +29,15 @@ export default function ProfileScreen() {
 
 	const handleUpdateUser = async () => {
 		try {
-			// First update username and bio if needed
 			if (newUsername || newBio) {
-				await updateProfile({
-					username: newUsername || convexUser?.username,
-					bio: newBio || convexUser?.bio,
-				})
+				await updateProfile(
+					{
+						username: newUsername || convexUser?.username,
+						bio: newBio || convexUser?.bio,
+					},
+					{ checkUsername: true } 
+				)
+
 				setConvexUser({
 					...convexUser!,
 					username: newUsername || convexUser?.username || '',
