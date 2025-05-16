@@ -30,19 +30,29 @@ export default function ProfileScreen() {
 	const handleUpdateUser = async () => {
 		try {
 			if (newUsername || newBio) {
-				await updateProfile(
-					{
-						username: newUsername || convexUser?.username,
-						bio: newBio || convexUser?.bio,
-					},
-					{ checkUsername: true } 
-				)
+				try {
+					await updateProfile(
+						{
+							username: newUsername || convexUser?.username,
+							bio: newBio || convexUser?.bio,
+						},
+						{ checkUsername: true }
+					)
 
-				setConvexUser({
-					...convexUser!,
-					username: newUsername || convexUser?.username || '',
-					bio: newBio || convexUser?.bio || '',
-				})
+					setConvexUser({
+						...convexUser!,
+						username: newUsername || convexUser?.username || '',
+						bio: newBio || convexUser?.bio || '',
+					})
+				} catch (error) {
+					if (error instanceof Error && error.message === 'Username is already taken') {
+						Alert.alert('Error', error.message)
+						// Nie zamykamy modala — wyjście z funkcji
+						return
+					}
+					// Inne błędy, jeśli chcesz, możesz obsłużyć inaczej lub rzucić dalej
+					throw error
+				}
 			}
 
 			// Handle password change if needed
